@@ -20,7 +20,7 @@ import java.time.Duration;
 
 public class OcpTest {
     public static void main(String[] args) {
-        Song song = new Song("Imagine", 106);
+        Song song = new Song("Imagssine", 106);
         System.out.println(song);
     }
 }
