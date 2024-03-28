@@ -23,13 +23,13 @@ public class UserController {
         return userServices.getAllUsers();
 
     }
-    @PostMapping("/create-user")
+    @PostMapping("/signup")
     public ResponseEntity createUser(@RequestBody UserDto userDto) {
         User user = userServices.save(userDto);
         if(Objects.isNull(user)){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("user was not create");
         }
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body("user with this id : " + user.getId()+ "was created ");
+                .body("user with this id : " + user.getId()+ "  was created ");
     }
 }

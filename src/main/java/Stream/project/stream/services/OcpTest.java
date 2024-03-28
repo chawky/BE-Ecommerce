@@ -11,16 +11,19 @@ import static java.util.Calendar.MONDAY;
 import static java.util.Calendar.SUNDAY;
 
 import java.time.Duration;
- record Song(String title, Duration duration) {
-     public Song(String title, int seconds) {
-         this(title,Duration.ofSeconds(seconds));
-     }
+class  C{
+    String name;
 }
-
 
 public class OcpTest {
     public static void main(String[] args) {
-        Song song = new Song("Imagssine", 106);
-        System.out.println(song);
+        C c1 = new C();
+        C c2 = c1;
+        c2.name = "c2";
+        System.out.println(c1.name);
+        c2 = null;
+        System.out.println(c2.name);
+
+
     }
 }

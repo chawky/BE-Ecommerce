@@ -5,6 +5,9 @@ import org.springframework.data.jdbc.repository.config.EnableJdbcAuditing;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.List;
+import java.util.Set;
+
 @Getter
 @Setter
 @Builder
@@ -27,4 +30,8 @@ public class User implements Serializable {
     private String userName;
     @Column
     private String password;
+    @OneToMany(cascade = CascadeType.ALL ,fetch = FetchType.LAZY,mappedBy = "user")
+    private Set<Role> role;
+
+
 }
