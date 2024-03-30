@@ -1,6 +1,6 @@
 package Stream.project.stream.services;
 
-import Stream.project.stream.ERole;
+import Stream.project.stream.models.ERole;
 import Stream.project.stream.models.DTOs.UserDto;
 
 import Stream.project.stream.models.LoginRequest;
@@ -75,28 +75,21 @@ public class UserServices implements UserDetailsService {
             strRoles.forEach(role -> {
                 switch (role) {
                     case "admin":
-                        Role adminRole = roleRepo.findByRoleName(ERole.ADMIN_ROLE)
-                                .orElseThrow(() -> new RuntimeException("role not found"));
-                        roles.add(adminRole);
+                        roles.add(new Role(ERole.ADMIN_ROLE,user));
                         break;
                     case "mod":
-                        Role modRole = roleRepo.findByRoleName(ERole.MODERATOR_ROLE)
-                                .orElseThrow(() -> new RuntimeException("role not found"));
-                        roles.add(modRole);
+                        roles.add(new Role(ERole.MODERATOR_ROLE,user));
                         break;
 
                     default:
-                        Role userRole = roleRepo.findByRoleName(ERole.USER_ROLE)
-                                .orElseThrow(() -> new RuntimeException("role not found"));
-                        roles.add(userRole);
+                        roles.add(new Role(ERole.USER_ROLE,user));
                         break;
                 }
             });
         }
         user.setRole(roles);
-        userRepo.save(user);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        return userRepo.save(usermapper.map(user, User.class));
+        return userRepo.save(user);
     }
 
     @Override
@@ -108,9 +101,9 @@ public class UserServices implements UserDetailsService {
     public JwtResponse loginUser(LoginRequest loginRequest) {
         JwtResponse jwtResponse = new JwtResponse();
         Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPw()));
+                new UsernamePasswordAuthenticationToken(loginRequest.getUserName(), loginRequest.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        String jwt = jwtUtils.generateJwtToken(loginRequest.getUsername());
+        String jwt = jwtUtils.generateJwtToken(loginRequest.getUserName());
         UserDetailsImpl userDetailsImpl = (UserDetailsImpl) authentication.getPrincipal();
         List<String> roles = new ArrayList<>();
         if(Objects.nonNull(userDetailsImpl.getAuthorities()) && userDetailsImpl.getAuthorities().isEmpty()) {

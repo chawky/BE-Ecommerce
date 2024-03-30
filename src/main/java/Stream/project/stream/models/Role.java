@@ -1,8 +1,6 @@
 package Stream.project.stream.models;
 
-import Stream.project.stream.ERole;
 import lombok.*;
-import org.springframework.data.jdbc.repository.config.EnableJdbcAuditing;
 
 import javax.persistence.*;
 
@@ -15,7 +13,7 @@ import javax.persistence.*;
 @Entity
 public class Role {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long roleId;
 
     @Enumerated(EnumType.STRING)
@@ -25,4 +23,8 @@ public class Role {
     @ManyToOne(fetch = FetchType.LAZY)
     private User user;
 
+    public Role(ERole eRole, User user) {
+        this.roleName = eRole;
+        this.user = user;
+    }
 }

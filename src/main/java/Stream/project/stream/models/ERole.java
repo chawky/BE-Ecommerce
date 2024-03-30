@@ -1,4 +1,4 @@
-package Stream.project.stream;
+package Stream.project.stream.models;
 
 
 public enum ERole {
