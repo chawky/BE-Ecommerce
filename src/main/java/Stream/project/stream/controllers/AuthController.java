@@ -7,12 +7,15 @@ import Stream.project.stream.repositories.RoleRepo;
 import Stream.project.stream.repositories.UserRepo;
 import Stream.project.stream.services.UserServices;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Objects;
 
 @CrossOrigin(origins = "*")
 @RestController
@@ -30,11 +33,17 @@ public class AuthController {
     JwtUtils jwtUtils;
 
     @PostMapping("/signin")
-    public ResponseEntity<?> autheticateUser(@RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<?> autheticateUser(@RequestBody LoginRequest loginRequest) throws Exception {
         JwtResponse jwt = userSerive.loginUser(loginRequest);
+        if (Objects.isNull(jwt)){
+            return ResponseEntity
+                    .status(HttpStatus.UNAUTHORIZED)
+                    .body("Bad credentials");
+        }else {
+            return ResponseEntity.ok(new JwtResponse(jwt.getToken(), jwt.getId(), jwt.getUsername(),
+                    jwt.getEmail(), jwt.getRole()));
+        }
 
-        return ResponseEntity.ok(new JwtResponse(jwt.getToken(), jwt.getId(), jwt.getUsername(),
-                jwt.getEmail(), jwt.getRole()));
     }
 
 }

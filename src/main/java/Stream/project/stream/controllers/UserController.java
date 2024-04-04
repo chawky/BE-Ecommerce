@@ -30,6 +30,6 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("user was not create");
         }
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body("user with this id : " + user.getId()+ "  was created ");
+                .body(user.getId());
     }
 }

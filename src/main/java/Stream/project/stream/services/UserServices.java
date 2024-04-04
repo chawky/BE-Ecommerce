@@ -19,6 +19,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -36,7 +37,7 @@ import static Stream.project.stream.models.mappers.UserMapper.getUserMapper;
 import static org.apache.logging.log4j.Level.INFO;
 
 @Service
-@Transactional
+
 @RequiredArgsConstructor
 public class UserServices implements UserDetailsService {
     @Autowired
@@ -51,14 +52,14 @@ public class UserServices implements UserDetailsService {
     @Autowired
     RoleRepo roleRepo;
     ModelMapper usermapper = getUserMapper();
-
+    @Transactional
     public List<UserDto> getAllUsers() {
 
         logger.log(INFO, "the users are  " + userRepo.findAll());
         List<User> allusers = userRepo.findAll();
         return userRepo.findAll().stream().map(e -> usermapper.map(e, UserDto.class)).collect(Collectors.toList());
     }
-
+    @Transactional
     public User save(UserDto userDto) {
         User user = usermapper.map(userDto, User.class);
 
@@ -98,24 +99,29 @@ public class UserServices implements UserDetailsService {
         return UserDetailsImpl.build(user);
     }
 
-    public JwtResponse loginUser(LoginRequest loginRequest) {
+    public JwtResponse loginUser(LoginRequest loginRequest) throws AuthenticationException {
         JwtResponse jwtResponse = new JwtResponse();
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(loginRequest.getUserName(), loginRequest.getPassword()));
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        String jwt = jwtUtils.generateJwtToken(loginRequest.getUserName());
-        UserDetailsImpl userDetailsImpl = (UserDetailsImpl) authentication.getPrincipal();
-        List<String> roles = new ArrayList<>();
-        if(Objects.nonNull(userDetailsImpl.getAuthorities()) && userDetailsImpl.getAuthorities().isEmpty()) {
-            roles=	userDetailsImpl.getAuthorities().stream().map(GrantedAuthority::getAuthority)
-                    .collect(Collectors.toList());
+        try {
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(loginRequest.getUserName(), loginRequest.getPassword()));
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            String jwt = jwtUtils.generateJwtToken(loginRequest.getUserName());
+            UserDetailsImpl userDetailsImpl = (UserDetailsImpl) authentication.getPrincipal();
+            List<String> roles = new ArrayList<>();
+            if (Objects.nonNull(userDetailsImpl.getAuthorities()) && userDetailsImpl.getAuthorities().isEmpty()) {
+                roles = userDetailsImpl.getAuthorities().stream().map(GrantedAuthority::getAuthority)
+                        .collect(Collectors.toList());
+            }
+
+            jwtResponse.setToken(jwt);
+            jwtResponse.setRole(roles);
+            jwtResponse.setId(userDetailsImpl.getId());
+            jwtResponse.setUsername(userDetailsImpl.getUsername());
+            jwtResponse.setEmail(userDetailsImpl.getEmail());
+            return jwtResponse;
+        }catch (AuthenticationException e){
+            return null;
         }
 
-        jwtResponse.setToken(jwt);
-        jwtResponse.setRole(roles);
-        jwtResponse.setId(userDetailsImpl.getId());
-        jwtResponse.setUsername(userDetailsImpl.getUsername());
-        jwtResponse.setEmail(userDetailsImpl.getEmail());
-        return jwtResponse;
     }
 }

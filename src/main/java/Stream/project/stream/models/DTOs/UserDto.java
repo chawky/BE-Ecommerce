@@ -1,5 +1,6 @@
 package Stream.project.stream.models.DTOs;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
 
 import javax.persistence.Column;
@@ -19,6 +20,5 @@ public class UserDto implements Serializable {
     private String password;
     private String userName;
     private Set<String> role;
-
 
 }
