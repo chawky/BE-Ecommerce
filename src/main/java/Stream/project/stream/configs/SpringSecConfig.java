@@ -32,7 +32,7 @@ public class SpringSecConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.cors().and().csrf().disable().authorizeRequests()
                 .antMatchers(HttpMethod.POST, "/signup/**").permitAll()
-                .antMatchers(HttpMethod.GET,"/users").permitAll()
+                .antMatchers(HttpMethod.POST,"/refreshtoken").permitAll()
                 .antMatchers(HttpMethod.POST,"/signin").permitAll()
                 .antMatchers( "/swagger-ui/index.html").permitAll()
 

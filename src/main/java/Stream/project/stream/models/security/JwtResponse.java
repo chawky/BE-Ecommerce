@@ -7,13 +7,15 @@ public class JwtResponse {
     private String type = "Bearer";
     private Long id;
     private String username;
+    private String refreshToken;
     private String email;
     private List<String> role;
-    public JwtResponse(String token,  Long id, String username, String email, List<String> role) {
+    public JwtResponse(String token,String refreshToken,  Long id, String username, String email, List<String> role) {
         super();
         this.token = token;
         this.id = id;
         this.username = username;
+        this.refreshToken = refreshToken;
         this.email = email;
         this.role = role;
     }
@@ -21,6 +23,15 @@ public class JwtResponse {
         super();
         // TODO Auto-generated constructor stub
     }
+
+    public String getRefreshToken() {
+        return refreshToken;
+    }
+
+    public void setRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
+    }
+
     public String getToken() {
         return token;
     }

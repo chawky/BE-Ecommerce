@@ -1,16 +1,13 @@
 package Stream.project.stream.services;
 
-import Stream.project.stream.models.ERole;
 import Stream.project.stream.models.DTOs.UserDto;
-
-import Stream.project.stream.models.LoginRequest;
-import Stream.project.stream.models.Role;
+import Stream.project.stream.models.*;
 import Stream.project.stream.models.security.JwtResponse;
 import Stream.project.stream.models.security.JwtUtils;
 import Stream.project.stream.models.security.UserDetailsImpl;
 import Stream.project.stream.repositories.RoleRepo;
+import Stream.project.stream.repositories.UserRepo;
 import lombok.RequiredArgsConstructor;
-import Stream.project.stream.models.User;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.modelmapper.ModelMapper;
@@ -27,7 +24,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import Stream.project.stream.repositories.UserRepo;
 
 import javax.transaction.Transactional;
 import java.util.*;
@@ -45,6 +41,8 @@ public class UserServices implements UserDetailsService {
     AuthenticationManager authenticationManager;
     @Autowired
     JwtUtils jwtUtils;
+    @Autowired
+    RefreshTokenService refreshTokenService;
     Logger logger = LogManager.getLogger(UserServices.class);
     private final BCryptPasswordEncoder passwordEncoder;
     @Autowired
@@ -107,6 +105,7 @@ public class UserServices implements UserDetailsService {
             SecurityContextHolder.getContext().setAuthentication(authentication);
             String jwt = jwtUtils.generateJwtToken(loginRequest.getUserName());
             UserDetailsImpl userDetailsImpl = (UserDetailsImpl) authentication.getPrincipal();
+            RefreshToken refreshToken = refreshTokenService.createRefreshToken(userDetailsImpl.getId());
             List<String> roles = new ArrayList<>();
             if (Objects.nonNull(userDetailsImpl.getAuthorities()) && userDetailsImpl.getAuthorities().isEmpty()) {
                 roles = userDetailsImpl.getAuthorities().stream().map(GrantedAuthority::getAuthority)
@@ -117,6 +116,7 @@ public class UserServices implements UserDetailsService {
             jwtResponse.setRole(roles);
             jwtResponse.setId(userDetailsImpl.getId());
             jwtResponse.setUsername(userDetailsImpl.getUsername());
+            jwtResponse.setRefreshToken(refreshToken.getToken());
             jwtResponse.setEmail(userDetailsImpl.getEmail());
             return jwtResponse;
         }catch (AuthenticationException e){

@@ -2,21 +2,18 @@ package Stream.project.stream.models.security;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
-import java.io.IOException;
-import java.util.ArrayList;
-
-import javax.annotation.PostConstruct;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.ArrayList;
 
 public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
     @Value("${SECRET}")
@@ -46,9 +43,9 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
 
     private UsernamePasswordAuthenticationToken getAuthentication(HttpServletRequest request) {
         String token = request.getHeader("Authorization");
-        if (token != null) {
+        if (token != null && JwtUtils.validateToken(token.replace("Bearer ", ""))) {
             // parse the token.
-            String user = JWT.require(Algorithm.HMAC512("Java_to_Dev_Secret".getBytes()))
+            String user = JWT.require(Algorithm.HMAC512("secret".getBytes()))
                     .build()
                     .verify(token.replace("Bearer ", ""))
                     .getSubject();

@@ -1,29 +1,14 @@
 package Stream.project.stream.models.security;
 
 
-import java.util.Date;
-import java.util.logging.Logger;
-
-import org.hibernate.annotations.common.util.impl.LoggerFactory;
+import io.jsonwebtoken.*;
+import io.jsonwebtoken.impl.TextCodec;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+
 import java.util.Date;
 import java.util.logging.Logger;
-
-import org.hibernate.annotations.common.util.impl.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Component;
-import io.jsonwebtoken.SignatureAlgorithm;
-
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.SignatureException;
-import io.jsonwebtoken.UnsupportedJwtException;
 
 @Component
 public class JwtUtils {
@@ -36,9 +21,10 @@ public class JwtUtils {
     public String generateJwtToken(String username) {
 
         return Jwts.builder()
-                .signWith(SignatureAlgorithm.HS512, "secret")
+                .signWith(SignatureAlgorithm.HS512, "secret".getBytes())
                 .setSubject(username)
                 .setIssuedAt(new Date())
+               .setExpiration(new Date(System.currentTimeMillis() + 10 * 1000))
                 .compact();
 
 
@@ -49,12 +35,14 @@ public class JwtUtils {
         return Jwts.parser().setSigningKey("secret").parseClaimsJws(token).getBody().getSubject();
 
     }
-    public Boolean validateToken(String token) {
+    public static Boolean validateToken(String token) {
         try {
-            Jwts.parser().setSigningKey("secret").parseClaimsJws(token);
+            String secretKey = TextCodec.BASE64URL.encode("secret");
+            Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
             return true;
         }catch (SignatureException e) {
             logger.info(e.getMessage());
+            throw new SignatureException(e.getMessage());
         }
         catch (MalformedJwtException e) {
             logger.info(e.getMessage());
