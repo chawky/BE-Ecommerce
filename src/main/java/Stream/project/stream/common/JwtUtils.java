@@ -1,4 +1,4 @@
-package Stream.project.stream.models.security;
+package Stream.project.stream.common;
 
 
 import io.jsonwebtoken.*;

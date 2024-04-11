@@ -3,7 +3,7 @@ package Stream.project.stream.services;
 import Stream.project.stream.models.DTOs.UserDto;
 import Stream.project.stream.models.*;
 import Stream.project.stream.models.security.JwtResponse;
-import Stream.project.stream.models.security.JwtUtils;
+import Stream.project.stream.common.JwtUtils;
 import Stream.project.stream.models.security.UserDetailsImpl;
 import Stream.project.stream.repositories.RoleRepo;
 import Stream.project.stream.repositories.UserRepo;

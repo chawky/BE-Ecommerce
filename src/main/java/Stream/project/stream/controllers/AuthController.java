@@ -6,7 +6,7 @@ import Stream.project.stream.models.RefreshToken;
 import Stream.project.stream.models.TokenRefreshRequest;
 import Stream.project.stream.models.TokenRefreshResponse;
 import Stream.project.stream.models.security.JwtResponse;
-import Stream.project.stream.models.security.JwtUtils;
+import Stream.project.stream.common.JwtUtils;
 import Stream.project.stream.repositories.RoleRepo;
 import Stream.project.stream.repositories.UserRepo;
 import Stream.project.stream.services.RefreshTokenService;

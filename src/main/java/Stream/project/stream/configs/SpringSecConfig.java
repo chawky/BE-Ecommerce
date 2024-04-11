@@ -33,6 +33,7 @@ public class SpringSecConfig extends WebSecurityConfigurerAdapter {
         http.cors().and().csrf().disable().authorizeRequests()
                 .antMatchers(HttpMethod.POST, "/signup/**").permitAll()
                 .antMatchers(HttpMethod.POST,"/refreshtoken").permitAll()
+                .antMatchers(HttpMethod.POST,"/productUpload").permitAll()
                 .antMatchers(HttpMethod.POST,"/signin").permitAll()
                 .antMatchers( "/swagger-ui/index.html").permitAll()
 
