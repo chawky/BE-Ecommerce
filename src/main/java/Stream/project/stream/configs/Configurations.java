@@ -27,6 +27,7 @@ public class Configurations {
         factory.setMaxRequestSize(DataSize.ofBytes(100000000L));
         return factory.createMultipartConfig();
     }
+
     @Bean
     public Docket api() {
         return new Docket(DocumentationType.SWAGGER_2)

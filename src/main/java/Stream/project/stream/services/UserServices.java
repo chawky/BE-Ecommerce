@@ -29,7 +29,7 @@ import javax.transaction.Transactional;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static Stream.project.stream.models.mappers.UserMapper.getUserMapper;
+import static Stream.project.stream.models.mappers.UtilMapper.getUtilMapper;
 import static org.apache.logging.log4j.Level.INFO;
 
 @Service
@@ -49,17 +49,17 @@ public class UserServices implements UserDetailsService {
     private UserRepo userRepo;
     @Autowired
     RoleRepo roleRepo;
-    ModelMapper usermapper = getUserMapper();
+    ModelMapper utilmapper = getUtilMapper();
     @Transactional
     public List<UserDto> getAllUsers() {
 
         logger.log(INFO, "the users are  " + userRepo.findAll());
         List<User> allusers = userRepo.findAll();
-        return userRepo.findAll().stream().map(e -> usermapper.map(e, UserDto.class)).collect(Collectors.toList());
+        return userRepo.findAll().stream().map(e -> utilmapper.map(e, UserDto.class)).collect(Collectors.toList());
     }
     @Transactional
     public User save(UserDto userDto) {
-        User user = usermapper.map(userDto, User.class);
+        User user = utilmapper.map(userDto, User.class);
 
         if (userRepo.findByUserName(user.getUserName()).isPresent()) {
             throw new RuntimeException("User already registered. Please use different username.");
