@@ -10,6 +10,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Lob;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -33,16 +34,20 @@ public class Product {
   @GeneratedValue(strategy = GenerationType.AUTO)
   private Long id;
   @Column
-  private String productName;
+  private String name;
   @Column
-  private String productCategory;
+  private double price;
   @Column
-  private String productDesc;
+  private String description;
   @Column
-  private double productPrice;
-  @JsonManagedReference
-  @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY, mappedBy = "product")
-  private List<ImageData> productImages;
+  private String imagePath;
+  @Column
+  private String category;
+  @Column
+  private String imageFileName;
+  @Lob
+  @Column(name = "imageBytes", columnDefinition = "LONGBLOB")
+  private byte[] imageBytes;
 
 
 }

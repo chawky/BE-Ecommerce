@@ -18,6 +18,7 @@ public class ProductDto {
   private String productName;
   private String productCategory;
   private String productDesc;
+  private String category;
   private double productPrice;
   private List<ImageDataDto> productImages;
 }

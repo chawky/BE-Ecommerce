@@ -7,13 +7,13 @@ import org.modelmapper.TypeMap;
 
 public class ProductMapper extends UtilMapper {
 
-  public static ModelMapper productEntity2DTO() {
-    ModelMapper mapper = new ModelMapper();
-    mapper.getConfiguration().setPreferNestedProperties(false);
-    TypeMap<Product, ProductDto> propertyMapper = mapper.createTypeMap(Product.class,
-        ProductDto.class);
-    propertyMapper.addMappings(m -> m.map(
-        Product::getProductImages, ProductDto::setProductImages));
-    return  mapper;
-  }
+ // public static ModelMapper productEntity2DTO() {
+//    ModelMapper mapper = new ModelMapper();
+//    mapper.getConfiguration().setPreferNestedProperties(false);
+//    TypeMap<Product, ProductDto> propertyMapper = mapper.createTypeMap(Product.class,
+//        ProductDto.class);
+//    propertyMapper.addMappings(m -> m.map(
+//        Product::getProductImages, ProductDto::setProductImages));
+//    return  mapper;
+//  }
 }

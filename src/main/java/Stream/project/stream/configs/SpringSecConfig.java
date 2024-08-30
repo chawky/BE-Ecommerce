@@ -32,6 +32,8 @@ public class SpringSecConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.cors().and().csrf().disable().authorizeRequests()
                 .antMatchers(HttpMethod.POST, "/signup/**").permitAll()
+                .antMatchers(HttpMethod.POST, "/saveProduct/**").permitAll()
+            .antMatchers(HttpMethod.POST, "**/image/download/**").permitAll()
                 .antMatchers(HttpMethod.POST,"/refreshtoken").permitAll()
                 .antMatchers(HttpMethod.POST,"/productUpload").permitAll()
                 .antMatchers(HttpMethod.POST,"/signin").permitAll()

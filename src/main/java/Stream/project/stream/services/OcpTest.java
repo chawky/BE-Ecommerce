@@ -1,5 +1,7 @@
 package Stream.project.stream.services;
 
+import com.amazonaws.auth.AWSCredentials;
+import com.amazonaws.auth.BasicAWSCredentials;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
@@ -17,12 +19,11 @@ class  C{
 
 public class OcpTest {
     public static void main(String[] args) {
-        C c1 = new C();
-        C c2 = c1;
-        c2.name = "c2";
-        System.out.println(c1.name);
-        c2 = null;
-        System.out.println(c2.name);
+        AWSCredentials credentials = new BasicAWSCredentials(
+            "<AWS accesskey>",
+            "<AWS secretkey>"
+        );
+
 
 
     }
