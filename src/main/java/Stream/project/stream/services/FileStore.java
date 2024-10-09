@@ -60,15 +60,16 @@ public class FileStore {
   public byte[] downloadAllProducts() {
 
     AWSCredentials awsCredentials = new BasicAWSCredentials(
-        "AKIAU6GDYOWM447CMVGH",
-        "9iinl5T3t5iPwDAzrN4ZQHlTvCer2RnKE2NcPytG"
+        "AKIAU6GDYOWM56GNKUUI",
+        "V6Rj+zOYoDL1Cf/UJpt2E1QVpYsgGdLZR1ew2lK9"
     );
     AmazonS3 sbucket = AmazonS3ClientBuilder
         .standard()
         .withRegion("eu-north-1")
         .withCredentials(new AWSStaticCredentialsProvider(awsCredentials))
         .build();
-    S3Objects.inBucket(sbucket, "product-images-list").forEach((S3ObjectSummary objectSummary) -> {
+    S3Objects.inBucket(sbucket, "product-images-list")
+        .forEach((S3ObjectSummary objectSummary) -> {
       // TODO: Consume `objectSummary` the way you need
       System.out.println(objectSummary.getKey());
     });

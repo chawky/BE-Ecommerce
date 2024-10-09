@@ -5,6 +5,7 @@ import Stream.project.stream.services.FileStore;
 import Stream.project.stream.services.ProductService;
 import java.io.IOException;
 import java.util.List;
+import javax.annotation.security.RolesAllowed;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -37,6 +38,7 @@ public class ProductsController {
       consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
       produces = MediaType.APPLICATION_JSON_VALUE
   )
+  @RolesAllowed({ "SELLER_ROLE", "ADMIN_ROLE" })
   public ResponseEntity<Product> saveTodo(@RequestParam("title") String title,
       @RequestParam("description") String description,
       @RequestParam("price") double price,

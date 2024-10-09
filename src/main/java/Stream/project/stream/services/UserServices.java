@@ -73,11 +73,11 @@ public class UserServices implements UserDetailsService {
         } else {
             strRoles.forEach(role -> {
                 switch (role) {
-                    case "admin":
+                    case "ADMIN_ROLE":
                         roles.add(new Role(ERole.ADMIN_ROLE,user));
                         break;
-                    case "mod":
-                        roles.add(new Role(ERole.MODERATOR_ROLE,user));
+                    case "SELLER_ROLE":
+                        roles.add(new Role(ERole.SELLER_ROLE,user));
                         break;
 
                     default:
@@ -107,7 +107,7 @@ public class UserServices implements UserDetailsService {
             UserDetailsImpl userDetailsImpl = (UserDetailsImpl) authentication.getPrincipal();
             RefreshToken refreshToken = refreshTokenService.createRefreshToken(userDetailsImpl.getId());
             List<String> roles = new ArrayList<>();
-            if (Objects.nonNull(userDetailsImpl.getAuthorities()) && userDetailsImpl.getAuthorities().isEmpty()) {
+            if (Objects.nonNull(userDetailsImpl.getAuthorities()) && !userDetailsImpl.getAuthorities().isEmpty()) {
                 roles = userDetailsImpl.getAuthorities().stream().map(GrantedAuthority::getAuthority)
                         .collect(Collectors.toList());
             }
