@@ -60,7 +60,8 @@ public class FileStore {
   public byte[] downloadAllProducts() {
 
     AWSCredentials awsCredentials = new BasicAWSCredentials(
-
+        "AKIAU6GDYOWM56GNKUUI",
+        "V6Rj+zOYoDL1Cf/UJpt2E1QVpYsgGdLZR1ew2lK9"
     );
     AmazonS3 sbucket = AmazonS3ClientBuilder
         .standard()
