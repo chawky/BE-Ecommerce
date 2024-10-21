@@ -31,7 +31,10 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
         String header = request.getHeader("Authorization");
 
-        if (header == null || !header.startsWith("Bearer ")) {
+        if (header == null || !header.startsWith("Bearer ")
+        || request.getRequestURI().startsWith("/signin")
+            || request.getRequestURI().startsWith("/signup")
+            || request.getRequestURI().startsWith("/refreshtoken")) {
             chain.doFilter(request, response);
             return;
         }

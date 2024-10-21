@@ -5,6 +5,7 @@ import Stream.project.stream.models.LoginRequest;
 import Stream.project.stream.models.RefreshToken;
 import Stream.project.stream.models.TokenRefreshRequest;
 import Stream.project.stream.models.TokenRefreshResponse;
+import Stream.project.stream.models.User;
 import Stream.project.stream.models.security.JwtResponse;
 import Stream.project.stream.common.JwtUtils;
 import Stream.project.stream.repositories.RoleRepo;
@@ -58,16 +59,13 @@ public class AuthController {
     @PostMapping("/refreshtoken")
     public ResponseEntity<?> refreshtoken(@Valid @RequestBody TokenRefreshRequest request) {
         String requestRefreshToken = request.getRefreshToken();
-
-        return refreshTokenService.findByToken(requestRefreshToken)
-                .map(refreshTokenService::verifyExpiration)
-                .map(RefreshToken::getUser)
-                .map(user -> {
-                    String token = jwtUtils.generateJwtToken(user.getUserName());
-                    return ResponseEntity.ok(new TokenRefreshResponse(token, requestRefreshToken));
-                })
-                .orElseThrow(() -> new TokenRefreshException(requestRefreshToken,
-                        "Refresh token is not in database!"));
+        RefreshToken refreshToken=  refreshTokenService.findByToken(requestRefreshToken);
+        if(refreshTokenService.verifyExpiration(refreshToken)){
+            User   user = refreshToken.getUser();
+            String token = jwtUtils.generateJwtToken(user.getUserName());
+            return ResponseEntity.ok(new TokenRefreshResponse(token, requestRefreshToken));
+        }
+        return ResponseEntity.internalServerError().body("error refreshing the token");
     }
 
 }

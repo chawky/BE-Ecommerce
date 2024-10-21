@@ -14,6 +14,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 
 @EnableWebSecurity
@@ -36,11 +37,9 @@ public class SpringSecConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.cors().and().csrf().disable().authorizeRequests()
-                .antMatchers(HttpMethod.POST, "/signup/**").permitAll()
-                .antMatchers(HttpMethod.POST, "/saveProduct/**").permitAll()
-            .antMatchers(HttpMethod.POST, "**/image/download/**").permitAll()
-                .antMatchers(HttpMethod.POST,"/refreshtoken").permitAll()
-                .antMatchers(HttpMethod.POST,"/productUpload").permitAll()
+            .requestMatchers(new AntPathRequestMatcher("/refreshtoken")).permitAll()
+            .antMatchers("/refreshtoken", "/refreshtoken/**").permitAll()
+            .antMatchers(HttpMethod.POST, "/signup").permitAll()
                 .antMatchers(HttpMethod.POST,"/signin").permitAll()
                 .antMatchers( "/swagger-ui/index.html").permitAll()
 

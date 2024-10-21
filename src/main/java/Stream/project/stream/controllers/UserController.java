@@ -1,8 +1,11 @@
 package Stream.project.stream.controllers;
 
 import Stream.project.stream.models.DTOs.UserDto;
+import Stream.project.stream.models.LoginRequest;
+import Stream.project.stream.models.security.JwtResponse;
 import io.swagger.annotations.ApiOperation;
 import Stream.project.stream.models.User;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +18,7 @@ import java.util.Objects;
 @RestController
 @CrossOrigin(origins = "*")
 public class UserController {
+
     @Autowired
     private UserServices userServices;
     @GetMapping("/users")
@@ -25,11 +29,15 @@ public class UserController {
     }
     @PostMapping("/signup")
     public ResponseEntity createUser(@RequestBody UserDto userDto) {
-        User user = userServices.save(userDto);
-        if(Objects.isNull(user)){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("user was not create");
+        JwtResponse jwt = userServices.save(userDto);
+    
+        if (Objects.isNull(jwt)){
+            return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .body("Bad credentials");
+        }else {
+            return ResponseEntity.ok(new JwtResponse(jwt.getToken(),jwt.getRefreshToken(), jwt.getId(), jwt.getUsername(),
+                jwt.getEmail(), jwt.getRole()));
         }
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(user.getId());
     }
 }

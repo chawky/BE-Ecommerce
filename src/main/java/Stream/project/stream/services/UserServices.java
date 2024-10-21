@@ -2,6 +2,7 @@ package Stream.project.stream.services;
 
 import Stream.project.stream.models.DTOs.UserDto;
 import Stream.project.stream.models.*;
+import Stream.project.stream.models.mappers.UserMapper;
 import Stream.project.stream.models.security.JwtResponse;
 import Stream.project.stream.common.JwtUtils;
 import Stream.project.stream.models.security.UserDetailsImpl;
@@ -49,6 +50,10 @@ public class UserServices implements UserDetailsService {
     private UserRepo userRepo;
     @Autowired
     RoleRepo roleRepo;
+
+
+
+
     ModelMapper utilmapper = getUtilMapper();
     @Transactional
     public List<UserDto> getAllUsers() {
@@ -58,21 +63,21 @@ public class UserServices implements UserDetailsService {
         return userRepo.findAll().stream().map(e -> utilmapper.map(e, UserDto.class)).collect(Collectors.toList());
     }
     @Transactional
-    public User save(UserDto userDto) {
-        User user = utilmapper.map(userDto, User.class);
+    public JwtResponse save(UserDto userDto) {
+        ModelMapper userMapper = new ModelMapper();
+        User user = UserMapper.configureMappings(userMapper).map(userDto, User.class);
 
         if (userRepo.findByUserName(user.getUserName()).isPresent()) {
             throw new RuntimeException("User already registered. Please use different username.");
         }
-        Set<String> strRoles = userDto.getRole();
+       String strRoles = userDto.getRole();
         Set<Role> roles = new HashSet<>();
         if (!Objects.nonNull(strRoles)) {
             Role userRole = roleRepo.findByRoleName(ERole.USER_ROLE)
                     .orElseThrow(() -> new RuntimeException("role not found"));
             roles.add(userRole);
         } else {
-            strRoles.forEach(role -> {
-                switch (role) {
+                switch (strRoles) {
                     case "ADMIN_ROLE":
                         roles.add(new Role(ERole.ADMIN_ROLE,user));
                         break;
@@ -84,11 +89,23 @@ public class UserServices implements UserDetailsService {
                         roles.add(new Role(ERole.USER_ROLE,user));
                         break;
                 }
-            });
         }
         user.setRole(roles);
+        LoginRequest loginRequest = new LoginRequest();
+        JwtResponse jwt = new JwtResponse();
+        String rawPassword = user.getPassword();
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        return userRepo.save(user);
+        if(user.getAddresses()!=null && !user.getAddresses().isEmpty()) {
+            user.getAddresses().get(0).setUser(user);
+        }
+
+        User savedUser = userRepo.save(user);
+        if(Objects.nonNull(savedUser.getPassword()) && Objects.nonNull(savedUser.getUserName())) {
+            loginRequest.setUserName(user.getUserName());
+            loginRequest.setPassword(rawPassword);
+            jwt = this.loginUser(loginRequest);
+        }
+        return jwt;
     }
 
     @Override

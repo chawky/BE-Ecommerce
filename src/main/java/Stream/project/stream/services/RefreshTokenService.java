@@ -4,6 +4,7 @@ import Stream.project.stream.configs.TokenRefreshException;
 import Stream.project.stream.models.RefreshToken;
 import Stream.project.stream.repositories.RefreshTokenRepository;
 import Stream.project.stream.repositories.UserRepo;
+import java.time.temporal.ChronoUnit;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -24,28 +25,31 @@ public class RefreshTokenService {
     @Autowired
     private UserRepo userRepository;
 
-    public Optional<RefreshToken> findByToken(String token) {
-        return refreshTokenRepository.findByToken(token);
+    public RefreshToken findByToken(String token) {
+         if(refreshTokenRepository.findByToken(token).isPresent()){
+             return refreshTokenRepository.findByToken(token).get();
+         }
+         return null;
     }
 
     public RefreshToken createRefreshToken(Long userId) {
         RefreshToken refreshToken = new RefreshToken();
 
         refreshToken.setUser(userRepository.findById(userId).get());
-        refreshToken.setExpiryDate(Instant.now().plusMillis(refreshTokenDurationMs));
+        refreshToken.setExpiryDate(Instant.now().plus(7, ChronoUnit.DAYS));
         refreshToken.setToken(UUID.randomUUID().toString());
 
         refreshToken = refreshTokenRepository.save(refreshToken);
         return refreshToken;
     }
 
-    public RefreshToken verifyExpiration(RefreshToken token) {
+    public boolean verifyExpiration(RefreshToken token) {
         if (token.getExpiryDate().compareTo(Instant.now()) < 0) {
             refreshTokenRepository.delete(token);
             throw new TokenRefreshException(token.getToken(), "Refresh token was expired. Please make a new signin request");
         }
 
-        return token;
+        return true;
     }
 
     @Transactional

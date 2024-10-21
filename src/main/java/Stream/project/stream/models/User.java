@@ -1,5 +1,6 @@
 package Stream.project.stream.models;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 import org.springframework.data.jdbc.repository.config.EnableJdbcAuditing;
 
@@ -30,7 +31,11 @@ public class User implements Serializable {
     private String userName;
     @Column
     private String password;
-    @OneToMany(cascade = CascadeType.ALL ,fetch = FetchType.LAZY,mappedBy = "user")
+
+    @OneToMany(cascade = CascadeType.ALL ,fetch = FetchType.LAZY ,mappedBy = "user",orphanRemoval = true)
+    @JsonManagedReference
+    private List<Address> addresses;
+    @OneToMany(cascade = CascadeType.ALL ,fetch = FetchType.LAZY,mappedBy = "user",orphanRemoval = true)
     private Set<Role> role;
 
 
