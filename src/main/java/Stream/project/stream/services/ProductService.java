@@ -8,12 +8,23 @@ import static org.apache.http.entity.ContentType.IMAGE_PNG;
 import Stream.project.stream.models.BucketName;
 import Stream.project.stream.models.Product;
 import Stream.project.stream.repositories.ProductRepo;
+import com.amazonaws.AmazonServiceException;
+import com.amazonaws.auth.AWSCredentials;
+import com.amazonaws.auth.AWSStaticCredentialsProvider;
+import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import com.amazonaws.services.s3.model.DeleteObjectRequest;
+import com.amazonaws.services.s3.model.ListObjectsRequest;
+import com.amazonaws.services.s3.model.ObjectListing;
+import com.amazonaws.services.s3.model.S3ObjectSummary;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import javax.persistence.EntityNotFoundException;
@@ -88,6 +99,39 @@ public class ProductService {
 
   public Product getProductById(Long id) {
     return  productRepo.findById(id).orElseThrow(EntityNotFoundException::new);
+  }
+
+  public void deleteProduct(Long id) {
+    Product product = this.getProductById(id);
+    if(Objects.nonNull(product)) {
+      try {
+        AWSCredentials awsCredentials = new BasicAWSCredentials(
+            "AKIAU6GDYOWM3LADKXUU",
+            "LHVSp96gWadD4oyDLBC65XPwKYSJBVnNQDV2kNn2"
+        );
+        AmazonS3 sbucket = AmazonS3ClientBuilder
+            .standard()
+            .withRegion("eu-north-1")
+            .withCredentials(new AWSStaticCredentialsProvider(awsCredentials))
+            .build();
+        final ListObjectsRequest listObjectsRequest = new ListObjectsRequest().withBucketName(BucketName.PRODUCT_IMAGE.getBucketName());
+
+        ObjectListing objects = sbucket.listObjects(listObjectsRequest);
+        for (S3ObjectSummary objectSummary : objects.getObjectSummaries())
+        {
+          if(objectSummary.getKey().contains(product.getImageFileName())){
+            sbucket.deleteObject(BucketName.PRODUCT_IMAGE.getBucketName(), objectSummary.getKey());
+          }else {
+            throw new EntityNotFoundException();
+          }
+        }
+        repository.deleteById(id);
+      } catch (AmazonServiceException e) {
+        throw new IllegalStateException("Failed to upload the file", e);
+      }
+
+    }
+
   }
 
   //  //old work is below

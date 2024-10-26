@@ -1,5 +1,6 @@
 package Stream.project.stream.controllers;
 
+import Stream.project.stream.models.DTOs.ProductDto;
 import Stream.project.stream.models.Product;
 import Stream.project.stream.models.security.JwtResponse;
 import Stream.project.stream.services.FileStore;
@@ -14,9 +15,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -66,6 +69,15 @@ public class ProductsController {
     List<Product> products = service.getProducts();
     fileStoreService.downloadAllProducts();
     return products;
+  }
+  @DeleteMapping(value = "/deleteProduct/{id}")
+  public  List<Product> deleteProduct(@PathVariable("id") String id) {
+    try {
+      service.deleteProduct(Long.parseLong(id));
+      return service.getProducts();
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
   }
 
 //  @PostMapping("/productUpload")
