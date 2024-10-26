@@ -41,7 +41,8 @@ public class FileStore {
     });
     try {
       AWSCredentials awsCredentials = new BasicAWSCredentials(
-
+          "AKIAU6GDYOWM3LADKXUU",
+          "LHVSp96gWadD4oyDLBC65XPwKYSJBVnNQDV2kNn2"
       );
       AmazonS3 sbucket = AmazonS3ClientBuilder
           .standard()
@@ -68,7 +69,8 @@ public class FileStore {
   public byte[] downloadAllProducts() {
 
     AWSCredentials awsCredentials = new BasicAWSCredentials(
-
+        "AKIAU6GDYOWM3LADKXUU",
+        "LHVSp96gWadD4oyDLBC65XPwKYSJBVnNQDV2kNn2"
     );
     AmazonS3 sbucket = AmazonS3ClientBuilder
         .standard()
