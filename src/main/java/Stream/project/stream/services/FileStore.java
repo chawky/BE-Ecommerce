@@ -40,7 +40,15 @@ public class FileStore {
       }
     });
     try {
-      amazonS3.putObject(path, fileName, inputStream, objectMetadata);
+      AWSCredentials awsCredentials = new BasicAWSCredentials(
+
+      );
+      AmazonS3 sbucket = AmazonS3ClientBuilder
+          .standard()
+          .withRegion("eu-north-1")
+          .withCredentials(new AWSStaticCredentialsProvider(awsCredentials))
+          .build();
+      sbucket.putObject(path, fileName, inputStream, objectMetadata);
     } catch (AmazonServiceException e) {
       throw new IllegalStateException("Failed to upload the file", e);
     }
@@ -60,8 +68,7 @@ public class FileStore {
   public byte[] downloadAllProducts() {
 
     AWSCredentials awsCredentials = new BasicAWSCredentials(
-        "AKIAU6GDYOWM3LADKXUU",
-        "LHVSp96gWadD4oyDLBC65XPwKYSJBVnNQDV2kNn2"
+
     );
     AmazonS3 sbucket = AmazonS3ClientBuilder
         .standard()

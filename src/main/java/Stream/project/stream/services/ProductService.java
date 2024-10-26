@@ -32,7 +32,7 @@ public class ProductService {
   @Autowired
   private ProductRepo productRepo;
 
-  public Product saveTodo(String title, String description, double price, MultipartFile file)
+  public Product saveTodo(String title, String description, double price, MultipartFile file,String category)
       throws IOException {
     //check if the file is empty
     if (file.isEmpty()) {
@@ -65,6 +65,7 @@ public class ProductService {
         .imagePath(path)
         .imageFileName(fileName)
         .imageBytes(file.getBytes())
+        .category(category)
         .build();
     repository.save(todo);
     return repository.findByName(todo.getName());

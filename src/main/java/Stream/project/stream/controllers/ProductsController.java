@@ -1,10 +1,12 @@
 package Stream.project.stream.controllers;
 
 import Stream.project.stream.models.Product;
+import Stream.project.stream.models.security.JwtResponse;
 import Stream.project.stream.services.FileStore;
 import Stream.project.stream.services.ProductService;
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 import javax.annotation.security.RolesAllowed;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,12 +40,19 @@ public class ProductsController {
       consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
       produces = MediaType.APPLICATION_JSON_VALUE
   )
-  @RolesAllowed({ "SELLER_ROLE", "ADMIN_ROLE" })
-  public ResponseEntity<Product> saveTodo(@RequestParam("title") String title,
+  public ResponseEntity saveTodo(@RequestParam("title") String title,
+      @RequestParam("category") String category,
       @RequestParam("description") String description,
       @RequestParam("price") double price,
       @RequestParam("file") MultipartFile file) throws IOException {
-    return new ResponseEntity<>(service.saveTodo(title, description,price,file), HttpStatus.OK);
+    Product product = service.saveTodo(title, description, price, file, category);
+    if (Objects.isNull(product)){
+      return ResponseEntity
+          .status(HttpStatus.UNAUTHORIZED)
+          .body("unable to upload");
+    }else {
+      return ResponseEntity.ok(product);
+    }
   }
   @GetMapping(value = "{id}/image/download")
   public Product getProduct(@PathVariable("id") Long id) {
