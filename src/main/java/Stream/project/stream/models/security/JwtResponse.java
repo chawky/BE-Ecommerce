@@ -1,5 +1,6 @@
 package Stream.project.stream.models.security;
 
+import Stream.project.stream.models.DTOs.UserDto;
 import java.util.List;
 
 public class JwtResponse {
@@ -10,7 +11,8 @@ public class JwtResponse {
     private String refreshToken;
     private String email;
     private List<String> role;
-    public JwtResponse(String token,String refreshToken,  Long id, String username, String email, List<String> role) {
+    private UserDto user;
+    public JwtResponse(String token,String refreshToken,  Long id, String username, String email, List<String> role, UserDto user) {
         super();
         this.token = token;
         this.id = id;
@@ -18,6 +20,7 @@ public class JwtResponse {
         this.refreshToken = refreshToken;
         this.email = email;
         this.role = role;
+        this.user = user;
     }
     public JwtResponse() {
         super();
@@ -69,5 +72,11 @@ public class JwtResponse {
         this.role = role;
     }
 
+    public UserDto getUser() {
+        return user;
+    }
 
+    public void setUser(UserDto user) {
+        this.user = user;
+    }
 }

@@ -11,6 +11,8 @@ import java.util.Objects;
 import javax.annotation.security.RolesAllowed;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -65,12 +67,14 @@ public class ProductsController {
     return product;
   }
   @GetMapping(value = "/allProductData")
+  @Cacheable("products")
   public  List<Product> getProduct() {
     List<Product> products = service.getProducts();
     fileStoreService.downloadAllProducts();
     return products;
   }
   @DeleteMapping(value = "/deleteProduct/{id}")
+  @CacheEvict(value = "products", allEntries = true)
   public  List<Product> deleteProduct(@PathVariable("id") String id) {
     try {
       service.deleteProduct(Long.parseLong(id));

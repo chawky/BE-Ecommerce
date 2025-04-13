@@ -24,13 +24,14 @@ public class UserDetailsImpl implements UserDetails {
   private User user;
 
   public UserDetailsImpl(Long id, String username, String email, String password,
-      Collection<? extends GrantedAuthority> authorities) {
+      Collection<? extends GrantedAuthority> authorities, User user) {
     super();
     this.id = id;
     this.username = username;
     this.email = email;
     this.password = password;
     this.authorities = authorities;
+    this.user = user;
   }
 
   public UserDetailsImpl() {
@@ -42,7 +43,7 @@ public class UserDetailsImpl implements UserDetails {
         .map(role -> new SimpleGrantedAuthority(role.getRoleName().name()))
         .collect(Collectors.toList());
     return new UserDetailsImpl(user.getId(), user.getUserName(), user.getEmail(),
-        user.getPassword(), authorities);
+        user.getPassword(), authorities, user);
   }
 
   public static long getSerialversionuid() {

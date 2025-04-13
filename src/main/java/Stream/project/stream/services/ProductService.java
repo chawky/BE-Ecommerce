@@ -31,6 +31,7 @@ import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -93,6 +94,7 @@ public class ProductService {
     return todos;
   }
   @Transactional
+  @Cacheable("products")
   public List<Product> getProducts() {
     return productRepo.findAll();
   }

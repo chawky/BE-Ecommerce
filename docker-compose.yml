@@ -1,0 +1,48 @@
+services:
+  frontend:
+    build:
+      context: C:\Users\1995c\projects\front\stream front\01-starting-project  # Path to Angular app
+      dockerfile: Dockerfile  # Make sure this is pointing to the correct Dockerfile
+    container_name: frontend-app
+    ports:
+      - "4200:80"  # Mapping Nginx port 80 to 4200 on localhost
+
+  backend:
+    build:
+      context: C:\Users\1995c\projects\back\stream  # Path to your Spring Boot app
+      dockerfile: Dockerfile  # Pointing to the correct Dockerfile
+    container_name: backend-app
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/springsec
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+  db:
+    image: mysql:5.7
+    container_name: mysql-db
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: springsec
+    ports:
+      - "3307:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./custom-my.cnf:/etc/mysql/conf.d/custom.cnf
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin
+    environment:
+      PMA_HOST: db  # The MySQL service name in your Docker network
+      PMA_PORT: 3306  # The MySQL port inside the container
+      MYSQL_ROOT_PASSWORD: root  # The password for the root user
+    ports:
+      - "8081:80"  # Access phpMyAdmin on localhost:8081
+    depends_on:
+      - db
+
+volumes:
+  db_data:

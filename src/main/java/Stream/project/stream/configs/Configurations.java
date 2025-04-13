@@ -1,6 +1,11 @@
 package Stream.project.stream.configs;
 
+import com.github.benmanes.caffeine.cache.Caffeine;
 import org.springframework.boot.web.servlet.MultipartConfigFactory;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.cache.caffeine.CaffeineCacheManager;
+import java.util.concurrent.TimeUnit;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -15,6 +20,7 @@ import javax.servlet.MultipartConfigElement;
 
 @Configuration
 @EnableSwagger2
+@EnableCaching
 public class Configurations {
     @Bean
     public BCryptPasswordEncoder bCryptPasswordEncoder() {
@@ -35,5 +41,17 @@ public class Configurations {
                 .apis(RequestHandlerSelectors.any())
                 .paths(PathSelectors.any())
                 .build();
+    }
+    @Bean
+    public CacheManager cacheManager() {
+        CaffeineCacheManager cacheManager = new CaffeineCacheManager("products");
+        cacheManager.setCaffeine(caffeineCacheBuilder());
+        return cacheManager;
+    }
+
+    Caffeine<Object, Object> caffeineCacheBuilder() {
+        return Caffeine.newBuilder()
+            .expireAfterWrite(10, TimeUnit.MINUTES) // Cache expires after 10 minutes
+            .maximumSize(1000); // Maximum of 100 entries in the cache
     }
 }

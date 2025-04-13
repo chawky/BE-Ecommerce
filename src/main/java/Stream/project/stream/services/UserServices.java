@@ -105,6 +105,7 @@ public class UserServices implements UserDetailsService {
             loginRequest.setPassword(rawPassword);
             jwt = this.loginUser(loginRequest);
         }
+        jwt.setUser(userDto);
         return jwt;
     }
 
@@ -128,13 +129,15 @@ public class UserServices implements UserDetailsService {
                 roles = userDetailsImpl.getAuthorities().stream().map(GrantedAuthority::getAuthority)
                         .collect(Collectors.toList());
             }
-
+            ModelMapper userMapper = new ModelMapper();
+            UserDto user = UserMapper.configureMappings(userMapper).map(userDetailsImpl.getUser(), UserDto.class);
             jwtResponse.setToken(jwt);
             jwtResponse.setRole(roles);
             jwtResponse.setId(userDetailsImpl.getId());
             jwtResponse.setUsername(userDetailsImpl.getUsername());
             jwtResponse.setRefreshToken(refreshToken.getToken());
             jwtResponse.setEmail(userDetailsImpl.getEmail());
+            jwtResponse.setUser(user);
             return jwtResponse;
         }catch (AuthenticationException e){
             return null;

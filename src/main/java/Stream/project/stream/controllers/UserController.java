@@ -37,7 +37,7 @@ public class UserController {
                 .body("Bad credentials");
         }else {
             return ResponseEntity.ok(new JwtResponse(jwt.getToken(),jwt.getRefreshToken(), jwt.getId(), jwt.getUsername(),
-                jwt.getEmail(), jwt.getRole()));
+                jwt.getEmail(), jwt.getRole(), jwt.getUser()));
         }
     }
 }
